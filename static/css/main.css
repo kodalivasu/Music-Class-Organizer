@@ -1,0 +1,3019 @@
+/* ========================================
+   Music Class Organizer - Main Stylesheet
+   ======================================== */
+
+/* ============================================================
+   MUSIC ITEMS (Lines 5-211)
+   Location: Music Library tab
+   Visible: Teacher (with edit), Student (read-only)
+   Elements: Recording cards inside raga groups + Recent Recordings
+   ============================================================ */
+
+/* Main music item card */
+.music-item {
+  background: #F5EDE4;        /* Card background */
+  border: 1px solid #E0D5C8; /* Card outline */
+  border-radius: 12px;       /* Corner roundness */
+  padding: 12px;             /* Space inside card */
+  margin-bottom: 8px;
+  transition: all 0.2s;
+}
+
+.music-item:hover {
+  border-color: #d4913b;
+}
+
+/* Top row: title and action buttons */
+.music-item-top {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.music-item-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.music-item-friendly {
+  display: block;
+  font-size: 13px;   /* Recording title text size */
+  font-weight: 600;
+  color: #2C1810;    /* Title text color */
+  line-height: 1.3;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Action buttons (download, share, edit) */
+.music-item-actions {
+  display: flex;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.item-action-btn {
+  background: none;
+  border: 1px solid #E0D5C8;
+  border-radius: 6px;
+  color: #A09080;
+  width: 34px;
+  height: 34px;
+  cursor: pointer;
+  transition: all 0.15s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.item-action-btn:hover {
+  border-color: #d4913b;
+  color: #d4913b;
+}
+
+.item-action-btn:active {
+  background: rgba(212, 145, 59, 0.1);
+}
+
+/* File name display */
+.music-item-name {
+  display: block;
+  font-size: 10px;
+  color: #A09080;
+  word-break: break-all;
+  margin-top: 2px;
+}
+
+/* Metadata tags container */
+.music-item-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 8px 0;
+  align-items: center;
+}
+
+/* Audio player */
+.music-item audio {
+  width: 100%;
+  height: 36px;
+}
+
+/* Edit panel (collapsible) */
+.music-item-edit {
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid #E0D5C8;
+}
+
+.music-item-edit.collapsed {
+  display: none;
+}
+
+.music-item-edit .music-item-name {
+  display: block;
+  font-size: 10px;
+  color: #A09080;
+  word-break: break-all;
+  margin-bottom: 6px;
+}
+
+/* Title editing row */
+.music-item-title-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.music-item-title-row .edit-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: #7A6A5A;
+  white-space: nowrap;
+}
+
+.title-edit-input {
+  flex: 1;
+  background: #FFFFFF;
+  border: 1px solid #E0D5C8;
+  border-radius: 6px;
+  padding: 8px 10px;  /* Input field padding */
+  font-size: 14px;   /* Custom title text size */
+  color: #2C1810;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.title-edit-input:focus {
+  border-color: #d4913b;
+  box-shadow: 0 0 0 2px rgba(212, 145, 59, 0.15);
+}
+
+/* Edit toggle button */
+.item-edit-toggle {
+  background: none;
+  border: 1px solid #E0D5C8;
+  border-radius: 6px;
+  color: #A09080;
+  width: 36px;
+  height: 36px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: all 0.15s;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+.item-edit-toggle:hover {
+  border-color: #d4913b;
+  color: #d4913b;
+}
+
+.item-edit-toggle.active {
+  background: #d4913b;
+  color: #fff;
+  border-color: #d4913b;
+}
+
+.student-mode .item-edit-toggle {
+  display: none;
+}
+
+/* Drag handle */
+.drag-handle {
+  color: #D5C8B8;
+  cursor: grab;
+  font-size: 18px;
+  user-select: none;
+  padding: 4px 2px;
+  border-radius: 4px;
+}
+
+.drag-handle:hover {
+  color: #d4913b;
+  background: rgba(212, 145, 59, 0.08);
+}
+
+.music-item.dragging {
+  opacity: 0.25;
+  transform: scale(0.97);
+}
+
+.raga-group.drag-over {
+  border-color: #d4913b;
+  box-shadow: 0 0 0 2px rgba(212, 145, 59, 0.2);
+}
+
+/* ============================================================
+   EDITABLE CONTROLS (Lines 212-299)
+   Location: Music Library - edit panel on each recording
+   Visible: Teacher only (hidden in student mode)
+   Elements: Raga/Type/Taal dropdowns, Paltaa toggle, Delete btn
+   ============================================================ */
+
+/* Dropdown selects (raga, type, taal) */
+.tag-select {
+  background: #fff;
+  color: #5A4A3A;
+  border: 1px solid #D5C8B8;
+  border-radius: 8px;
+  padding: 8px 28px 8px 10px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  -webkit-appearance: none;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='5'%3E%3Cpath fill='%23A09080' d='M0 0l4 5 4-5z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 8px center;
+  touch-action: manipulation;
+}
+
+.tag-select.raga-select {
+  background-color: #fff;
+  color: #c07828;
+  border-color: #d4913b;
+  font-weight: 600;
+}
+
+.tag-select.type-select {
+  background-color: #fff;
+  color: #d4913b;
+  border-color: #E0D5C8;
+}
+
+.tag-select.taal-select {
+  background-color: #fff;
+  color: #a0344a;
+  border-color: #E0D5C8;
+}
+
+.tag-select:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(212, 145, 59, 0.3);
+}
+
+/* Paltaa toggle button */
+.paltaa-btn {
+  background: #fff;
+  color: #A09080;
+  border: 1px solid #D5C8B8;
+  border-radius: 8px;
+  padding: 8px 14px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+  touch-action: manipulation;
+}
+
+.paltaa-btn.active {
+  background: #e8f5e0;
+  color: #3a8a3a;
+  border-color: #3a8a3a;
+}
+
+/* Delete button */
+.delete-btn {
+  background: #fff;
+  color: #A09080;
+  border: 1px solid #E0D5C8;
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.15s;
+  margin-left: auto;
+  touch-action: manipulation;
+}
+
+.delete-btn:hover {
+  background: #fde8e8;
+  color: #cc3333;
+  border-color: #cc3333;
+}
+
+.student-mode .delete-btn {
+  display: none;
+}
+
+/* ============================================================
+   RAGA GROUP HEADER EDITING (Lines 300-366)
+   Location: Music Library - click raga name to rename
+   Visible: Teacher only
+   Elements: Raga name, edit icon, badge count, collapse arrow
+   ============================================================ */
+
+.raga-name {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.edit-icon {
+  font-size: 14px;
+  color: #D5C8B8;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.card-header:hover .edit-icon {
+  opacity: 1;
+}
+
+.edit-icon:hover {
+  color: #d4913b !important;
+}
+
+@media (hover: none) {
+  .edit-icon {
+    opacity: 0.7;
+  }
+}
+
+.raga-edit-input {
+  background: #F5EDE4;
+  border: 2px solid #d4913b;
+  border-radius: 10px;
+  color: #2C1810;
+  font-size: 15px;
+  font-weight: 600;
+  padding: 6px 12px;
+  width: 200px;
+}
+
+.raga-edit-input:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(212, 145, 59, 0.2);
+}
+
+/* Badge (count indicator) */
+.badge {
+  background: #F5EDE4;
+  color: #7A6A5A;
+  padding: 3px 10px;
+  border-radius: 10px;
+  font-size: 11px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.badge.muted {
+  opacity: 0.5;
+}
+
+/* ========================================
+   REMAINING APP STYLES
+   Extracted from Python - Phase 1
+   ======================================== */
+
+/* ============================================================
+   BASE STYLES (Lines 367-388)
+   Location: Entire app
+   Visible: All roles
+   Elements: Page reset, html/body, global defaults
+   ============================================================ */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+  background: #FDF6EE;
+  color: #2C1810;
+  padding-bottom: 76px;
+  overflow-x: hidden;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ============================================================
+   ROLE OVERLAY (Lines 389-501)
+   Location: First screen on load - "Choose your role"
+   Visible: Until you pick Teacher / Student / Parent
+   Elements: Role cards, title, subtitle
+   ============================================================ */
+#role-overlay {
+  position: fixed;
+  inset: 0;
+  background: #1a1210;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+.role-title {
+  font-size: 26px;
+  font-weight: 800;
+  color: #fff;
+  margin-bottom: 6px;
+  text-align: center;
+}
+
+.role-title span {
+  color: #d4913b;
+}
+
+.role-subtitle {
+  color: #8a7a6a;
+  font-size: 14px;
+  margin-bottom: 32px;
+  text-align: center;
+}
+
+.role-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+  max-width: 400px;
+}
+
+.role-card {
+  background: #2a1f1a;
+  border: 1px solid #3d2e24;
+  border-radius: 16px;
+  padding: 20px;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.role-card:hover {
+  border-color: #d4913b;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 20px rgba(212, 145, 59, 0.15);
+}
+
+.role-card:active {
+  transform: scale(0.98);
+}
+
+.role-card-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.role-card-icon svg {
+  width: 24px;
+  height: 24px;
+}
+
+.role-card.teacher .role-card-icon {
+  background: linear-gradient(135deg, #3a2510, #5a3d1a);
+}
+
+.role-card.teacher .role-card-icon svg {
+  fill: #e8b060;
+}
+
+.role-card.student .role-card-icon {
+  background: linear-gradient(135deg, #2a1520, #4a2538);
+}
+
+.role-card.student .role-card-icon svg {
+  fill: #d08aaa;
+}
+
+.role-card.parent .role-card-icon {
+  background: linear-gradient(135deg, #1a2a1a, #2a4a2a);
+}
+
+.role-card.parent .role-card-icon svg {
+  fill: #80c080;
+}
+
+.role-card-text h3 {
+  font-size: 16px;
+  font-weight: 700;
+  color: #fff;
+}
+
+.role-card-text p {
+  font-size: 12px;
+  color: #8a7a6a;
+  margin-top: 2px;
+}
+
+/* ============================================================
+   HEADER (Lines 502-529)
+   Location: Top of app (below role overlay)
+   Visible: All roles after role selected
+   Elements: "Music Class Organizer" title, subtitle
+   ============================================================ */
+header {
+  background: linear-gradient(135deg, #2C1810 0%, #3A2518 50%, #2C1810 100%);
+  padding: 20px 16px 16px;
+  border-bottom: 1px solid rgba(212, 145, 59, 0.3);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  backdrop-filter: blur(12px);
+}
+
+header h1 {
+  font-size: 22px;   /* App title size */
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: -0.3px;
+}
+
+header h1 span {
+  color: #d4913b;   /* Accent color in title */
+}
+
+header p {
+  color: #baa88e;
+  font-size: 12px;
+  margin-top: 3px;
+}
+
+.header-logout {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  font-size: 13px;
+  color: #baa88e;
+  text-decoration: none;
+}
+
+.header-logout:hover {
+  color: #d4913b;
+}
+
+/* ============================================================
+   NAV (Lines 530-585)
+   Location: Bottom of screen - tab bar
+   Visible: All roles
+   Elements: Home, Music, Events, People tabs (icons + labels)
+   ============================================================ */
+nav {
+  display: flex;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: rgba(44, 24, 16, 0.97);
+  backdrop-filter: blur(16px);
+  border-top: 1px solid rgba(212, 145, 59, 0.2);
+  z-index: 100;
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+nav button {
+  flex: 1;
+  background: none;
+  border: none;
+  color: #baa88e;
+  padding: 10px 4px 8px;
+  cursor: pointer;
+  font-size: 10px;
+  font-weight: 500;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  transition: color 0.2s;
+  position: relative;
+}
+
+nav button svg {
+  width: 22px;
+  height: 22px;
+  fill: currentColor;
+}
+
+nav button:hover {
+  color: #e0d0c0;
+}
+
+nav button.active {
+  color: #d4913b;   /* Active tab highlight color */
+}
+
+nav button.active::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 25%;
+  right: 25%;
+  height: 2px;
+  background: #d4913b;
+  border-radius: 0 0 2px 2px;
+}
+
+/* ============================================================
+   MAIN (Lines 586-619)
+   Location: Content area between header and nav
+   Visible: All roles
+   Elements: Tab content container, h2 titles, fade animation
+   ============================================================ */
+main {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 16px;
+}
+
+.tab {
+  display: none;
+}
+
+.tab.active {
+  display: block;
+  animation: fadeIn 0.25s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+h2 {
+  font-size: 22px;
+  font-weight: 700;
+  color: #2C1810;
+  margin-bottom: 16px;
+}
+
+/* ============================================================
+   TEACHER WELCOME (Lines 620-799)
+   Location: Teacher Home tab - top section
+   Visible: Teacher only
+   Elements: Welcome text, date, Switch role btn, Settings, Practice tracking
+   ============================================================ */
+.teacher-welcome {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 20px;
+}
+
+.welcome-text h2 {
+  margin-bottom: 2px;
+}
+
+.welcome-date {
+  color: #7A6A5A;
+  font-size: 13px;
+}
+
+.role-switch-btn {
+  background: #fff;
+  border: 1px solid #E0D5C8;
+  border-radius: 10px;
+  padding: 8px 10px;
+  cursor: pointer;
+  color: #7A6A5A;
+  transition: all 0.15s;
+}
+
+.role-switch-btn:hover {
+  border-color: #d4913b;
+  color: #d4913b;
+}
+
+#global-switch-btn {
+  position: fixed;
+  top: 56px;
+  right: 12px;
+  z-index: 200;
+  background: rgba(44, 24, 16, 0.85);
+  border: 1px solid rgba(212, 145, 59, 0.3);
+  border-radius: 10px;
+  padding: 6px 10px;
+  cursor: pointer;
+  color: #e0d0c0;
+  font-size: 11px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  transition: all 0.15s;
+  backdrop-filter: blur(8px);
+}
+
+#global-switch-btn svg {
+  width: 14px;
+  height: 14px;
+}
+
+#global-switch-btn:hover {
+  border-color: #d4913b;
+  color: #d4913b;
+}
+
+.settings-btn {
+  background: #fff;
+  border: 1px solid #E0D5C8;
+  border-radius: 10px;
+  padding: 10px;
+  cursor: pointer;
+  color: #7A6A5A;
+  transition: all 0.15s;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  min-width: 40px;
+  min-height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.settings-btn:hover {
+  border-color: #d4913b;
+  color: #d4913b;
+}
+
+.settings-card {
+  background: #fff;
+  border: 1px solid #E0D5C8;
+  border-radius: 14px;
+  padding: 16px;
+  margin-bottom: 16px;
+}
+
+.settings-card .modal-input {
+  -webkit-user-select: text;
+  user-select: text;
+  touch-action: manipulation;
+}
+
+/* Practice Tracking (Teacher) */
+.practice-tracking-card {
+  background: #fff;
+  border: 1px solid #E0D5C8;
+  border-radius: 14px;
+  padding: 16px;
+  margin-bottom: 10px;
+  box-shadow: 0 1px 4px rgba(44, 24, 16, 0.06);
+}
+
+.pt-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 10px;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.pt-name {
+  font-size: 16px;
+  font-weight: 700;
+  color: #2C1810;
+}
+
+.pt-stats {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.pt-stat {
+  background: #F5EDE4;
+  color: #7A6A5A;
+  padding: 2px 10px;
+  border-radius: 10px;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.pt-entries {
+  border-top: 1px solid #E0D5C8;
+  padding-top: 8px;
+}
+
+.pt-entry {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 0;
+  border-bottom: 1px solid #F0E8E0;
+  font-size: 13px;
+}
+
+.pt-entry:last-child {
+  border-bottom: none;
+}
+
+.pt-date {
+  color: #d4913b;
+  font-weight: 600;
+  min-width: 90px;
+}
+
+.pt-dur {
+  color: #3a8a3a;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.pt-items {
+  color: #5A4A3A;
+  flex: 1;
+}
+
+.pt-more {
+  text-align: center;
+  color: #A09080;
+  font-size: 12px;
+  padding: 6px 0;
+}
+
+/* ============================================================
+   ACTION CARDS - Teacher Dashboard (Lines 800-975)
+   Location: Teacher Home tab - main cards
+   Visible: Teacher only
+   Elements: Music, Attendance, Events action cards + buttons
+   ============================================================ */
+.action-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.action-card {
+  background: #fff;
+  border: 1px solid #E0D5C8;
+  border-radius: 18px;
+  padding: 20px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 1px 4px rgba(44, 24, 16, 0.06);
+}
+
+.action-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+}
+
+.music-action-card::before {
+  background: linear-gradient(90deg, #d4913b, #e8b060);
+}
+
+.attendance-action-card::before {
+  background: linear-gradient(90deg, #a0344a, #c05068);
+}
+
+.events-action-card::before {
+  background: linear-gradient(90deg, #d4913b, #f0c870);
+}
+
+.action-card-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 12px;
+}
+
+.action-card-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.action-card-icon svg {
+  width: 22px;
+  height: 22px;
+}
+
+.music-icon {
+  background: linear-gradient(135deg, #d4913b, #e8b060);
+}
+
+.music-icon svg {
+  fill: #fff;
+}
+
+.attendance-icon {
+  background: linear-gradient(135deg, #a0344a, #c05068);
+}
+
+.attendance-icon svg {
+  fill: #fff;
+}
+
+.events-icon {
+  background: linear-gradient(135deg, #d4913b, #e8b060);
+}
+
+.events-icon svg {
+  fill: #fff;
+}
+
+.action-card-title h3 {
+  font-size: 16px;
+  font-weight: 700;
+  color: #2C1810;
+}
+
+.action-card-title p {
+  font-size: 12px;
+  color: #7A6A5A;
+  margin-top: 2px;
+}
+
+.action-card-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  align-items: center;
+  font-size: 12px;
+  color: #A09080;
+  margin-bottom: 14px;
+}
+
+.action-card-stats .dot {
+  color: #D5C8B8;
+}
+
+.action-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.action-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #F5EDE4;
+  border: 1px solid #E0D5C8;
+  border-radius: 10px;
+  padding: 10px 14px;
+  color: #5A4A3A;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s;
+  white-space: nowrap;
+}
+
+.action-btn svg {
+  width: 16px;
+  height: 16px;
+  fill: currentColor;
+}
+
+.action-btn:hover {
+  border-color: #d4913b;
+  color: #2C1810;
+}
+
+.action-btn:active {
+  transform: scale(0.97);
+}
+
+.action-btn.primary {
+  background: linear-gradient(135deg, #d4913b, #c07828); /* Primary button color */
+  border-color: #d4913b;
+  color: #fff;
+  font-weight: 600;
+}
+
+.action-btn.primary:hover {
+  box-shadow: 0 2px 12px rgba(212, 145, 59, 0.3);
+}
+
+.music-action-card .action-btn.primary {
+  background: linear-gradient(135deg, #d4913b, #c07828);
+  border-color: #d4913b;
+  color: #fff;
+}
+
+.attendance-action-card .action-btn.primary {
+  background: linear-gradient(135deg, #a0344a, #8a2a3a);
+  border-color: #a0344a;
+  color: #fff;
+}
+
+.events-action-card .action-btn.primary {
+  background: linear-gradient(135deg, #d4913b, #c07828);
+  border-color: #d4913b;
+  color: #fff;
+}
+
+/* ============================================================
+   MODALS (Lines 976-1043)
+   Location: Pop-ups from bottom (Record, Add Event, etc.)
+   Visible: When opened by user
+   Elements: Modal overlay, content box, header, close btn, body
+   ============================================================ */
+.modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.8);
+  z-index: 500;
+  justify-content: center;
+  align-items: flex-end;
+}
+
+.modal.active {
+  display: flex;
+  animation: fadeIn 0.2s ease;
+}
+
+.modal-content {
+  background: #fff;
+  border-radius: 20px 20px 0 0;
+  width: 100%;
+  max-width: 500px;
+  max-height: 85vh;
+  overflow-y: auto;
+  padding: 0;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 20px 12px;
+  border-bottom: 1px solid #E0D5C8;
+  position: sticky;
+  top: 0;
+  background: #fff;
+  z-index: 1;
+  border-radius: 20px 20px 0 0;
+}
+
+.modal-header h3 {
+  font-size: 18px;
+  font-weight: 700;
+  color: #2C1810;
+}
+
+.modal-close {
+  background: #F5EDE4;
+  border: none;
+  color: #7A6A5A;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-close:hover {
+  background: #E0D5C8;
+  color: #2C1810;
+}
+
+.modal-body {
+  padding: 20px;
+}
+
+/* ============================================================
+   RECORDER (Lines 1044-1183)
+   Location: Record modal (Music action card → Record)
+   Visible: Teacher when recording
+   Elements: Timer, record/stop button, preview, save form
+   ============================================================ */
+.recorder-area {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  padding: 20px 0;
+}
+
+#rec-timer {
+  font-size: 48px;
+  font-weight: 800;
+  color: #2C1810;
+  font-variant-numeric: tabular-nums;
+}
+
+#rec-status {
+  font-size: 13px;
+  color: #7A6A5A;
+}
+
+.rec-btn {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  border: 3px solid #E0D5C8;
+  background: #F5EDE4;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s;
+}
+
+.rec-btn:hover {
+  border-color: #d4913b;
+}
+
+.rec-btn.record {
+  border-color: #e74c3c;
+}
+
+.rec-btn.record:hover {
+  background: rgba(231, 76, 60, 0.1);
+  box-shadow: 0 0 20px rgba(231, 76, 60, 0.3);
+}
+
+.rec-btn.record svg {
+  fill: #e74c3c;
+}
+
+.rec-btn.stop {
+  border-color: #e74c3c;
+  background: rgba(231, 76, 60, 0.08);
+}
+
+.rec-btn.stop svg {
+  fill: #e74c3c;
+}
+
+#rec-preview {
+  width: 100%;
+}
+
+#rec-save-section {
+  display: none;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+}
+
+.modal-input {
+  width: 100%;
+  padding: 12px 14px;
+  background: #F5EDE4;
+  border: 1px solid #D5C8B8;
+  border-radius: 10px;
+  color: #2C1810;
+  font-size: 14px;
+}
+
+.modal-input:focus {
+  outline: none;
+  border-color: #d4913b;
+}
+
+.modal-input::placeholder {
+  color: #A09080;
+}
+
+.modal-textarea {
+  resize: vertical;
+  min-height: 60px;
+  font-family: inherit;
+}
+
+.save-btn {
+  background: linear-gradient(135deg, #d4913b, #c07828);
+  border: 1px solid #d4913b;
+  border-radius: 12px;
+  color: #fff;
+  padding: 14px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.save-btn:hover {
+  box-shadow: 0 2px 12px rgba(212, 145, 59, 0.3);
+}
+
+.save-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.modal-label {
+  font-size: 12px;
+  color: #7A6A5A;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 4px;
+  display: block;
+}
+
+.modal-row {
+  margin-bottom: 14px;
+}
+
+.modal-row-inline {
+  display: flex;
+  gap: 10px;
+}
+
+.modal-row-inline > * {
+  flex: 1;
+}
+
+/* ============================================================
+   ATTENDANCE (Lines 1184-1276)
+   Location: Attendance modal (Attendance card → Mark attendance)
+   Visible: Teacher when marking attendance
+   Elements: Date picker, student checkboxes, Add student btn
+   ============================================================ */
+.att-controls {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 14px;
+  align-items: center;
+}
+
+.att-controls input[type=date] {
+  flex: 1;
+}
+
+.att-actions {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.att-action-btn {
+  background: #F5EDE4;
+  border: 1px solid #E0D5C8;
+  border-radius: 8px;
+  padding: 6px 12px;
+  color: #7A6A5A;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.att-action-btn:hover {
+  border-color: #d4913b;
+  color: #2C1810;
+}
+
+.add-student-btn {
+  border-color: #3a8a3a;
+  color: #3a8a3a;
+}
+
+.add-student-btn:hover {
+  border-color: #2a7a2a;
+  color: #2a7a2a;
+}
+
+.att-student {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px;
+  background: #F5EDE4;
+  border: 1px solid #E0D5C8;
+  border-radius: 10px;
+  margin-bottom: 6px;
+  cursor: pointer;
+  transition: border-color 0.15s;
+}
+
+.att-student:hover {
+  border-color: #d4913b;
+}
+
+.att-student input {
+  display: none;
+}
+
+.att-check {
+  width: 22px;
+  height: 22px;
+  border: 2px solid #D5C8B8;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: all 0.15s;
+}
+
+.att-student input:checked + .att-check {
+  background: #3a8a3a;
+  border-color: #3a8a3a;
+}
+
+.att-student input:checked + .att-check::after {
+  content: '✓';
+  color: #fff;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.att-student span:last-child {
+  font-size: 14px;
+  color: #2C1810;
+}
+
+/* ============================================================
+   HISTORY (Lines 1277-1318)
+   Location: Attendance modal - past sessions list
+   Visible: Teacher in attendance modal
+   Elements: Date, count, names, notes per session
+   ============================================================ */
+.history-entry {
+  background: #fff;
+  border: 1px solid #E0D5C8;
+  border-radius: 12px;
+  padding: 14px;
+  margin-bottom: 8px;
+}
+
+.history-date {
+  font-size: 14px;
+  font-weight: 700;
+  color: #d4913b;
+}
+
+.history-count {
+  font-size: 13px;
+  color: #7A6A5A;
+  margin-top: 2px;
+}
+
+.history-names {
+  font-size: 12px;
+  color: #7A6A5A;
+  margin-top: 6px;
+  line-height: 1.4;
+}
+
+.history-notes {
+  font-size: 12px;
+  color: #3a8a3a;
+  margin-top: 4px;
+  font-style: italic;
+}
+
+.empty-state {
+  color: #A09080;
+  text-align: center;
+  padding: 40px 20px;
+  font-size: 14px;
+}
+
+/* ============================================================
+   SCHEDULED EVENTS (Lines 1319-1368)
+   Location: Events tab + Teacher Home (Upcoming Events card)
+   Visible: Teacher, Parent (events list)
+   Elements: Event rows with date badge, name, time, location
+   ============================================================ */
+.scheduled-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.scheduled-event {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+  padding: 12px;
+  background: #fff;
+  border: 1px solid #E0D5C8;
+  border-radius: 10px;
+}
+
+.se-date {
+  background: linear-gradient(135deg, #d4913b, #c07828);
+  border: none;
+  border-radius: 8px;
+  padding: 6px 10px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #fff;
+  white-space: nowrap;
+}
+
+.se-info {
+  flex: 1;
+}
+
+.se-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: #2C1810;
+}
+
+.se-meta {
+  font-size: 12px;
+  color: #7A6A5A;
+  margin-top: 2px;
+}
+
+.se-desc {
+  font-size: 12px;
+  color: #A09080;
+  margin-top: 4px;
+}
+
+/* ============================================================
+   RECENT RECORDINGS (Lines 1369-1427)
+   Location: Music Library tab - top collapsible section
+   Visible: Teacher, Student (read-only)
+   Elements: "Recent Recordings" card, list of latest items
+   ============================================================ */
+.recent-section {
+  margin-bottom: 8px;
+}
+
+.recent-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.recent-item {
+  background: #fff;
+  border: 1px solid #E0D5C8;
+  border-radius: 12px;
+  padding: 10px 14px;
+  box-shadow: 0 1px 4px rgba(44, 24, 16, 0.06);
+}
+
+.recent-item-top {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 6px;
+}
+
+.recent-item-info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.recent-item-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: #2C1810;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.recent-item-raga {
+  background: linear-gradient(135deg, #d4913b, #c07828);
+  color: #fff;
+  padding: 2px 8px;
+  border-radius: 8px;
+  font-size: 10px;
+  font-weight: 600;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.recent-item audio {
+  width: 100%;
+  height: 32px;
+}
+
+/* ============================================================
+   CARDS (Lines 1428-1481)
+   Location: Collapsible groups (raga groups, Recent Recordings)
+   Visible: Music Library, Events
+   Elements: Card header (click to expand/collapse), card body
+   ============================================================ */
+.card {
+  background: #fff;
+  border: 1px solid #E0D5C8;
+  border-radius: 16px;
+  margin-bottom: 12px;
+  overflow: hidden;
+  transition: border-color 0.2s, box-shadow 0.25s;
+  box-shadow: 0 1px 4px rgba(44, 24, 16, 0.06);
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 16px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.card-header:active {
+  background: rgba(212, 145, 59, 0.06);
+}
+
+.card-header-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+  min-width: 0;
+}
+
+.card-header h3 {
+  font-size: 15px;
+  font-weight: 600;
+  color: #2C1810;
+}
+
+.card-body {
+  padding: 0 16px 16px;
+}
+
+.card-body.collapsed {
+  display: none;
+}
+
+.collapse-arrow {
+  font-size: 10px;
+  color: #A09080;
+  margin-left: 6px;
+  transition: transform 0.2s;
+  display: inline-block;
+}
+
+/* ============================================================
+   GALLERY (Lines 1482-1507)
+   Location: Events tab - media grid
+   Visible: Teacher, when event has images/videos
+   Elements: Thumbnail grid, lightbox on click
+   ============================================================ */
+.gallery {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 4px;
+}
+
+.gallery img {
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: cover;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: transform 0.15s;
+}
+
+.gallery img:hover {
+  transform: scale(1.02);
+}
+
+.gallery video {
+  width: 100%;
+  border-radius: 8px;
+  grid-column: span 2;
+}
+
+/* ============================================================
+   PEOPLE (Lines 1508-1606)
+   Location: People tab
+   Visible: Teacher (full), Student/Parent (limited)
+   Elements: Teacher card, student list, avatars, role badges
+   ============================================================ */
+.people-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+}
+
+.person {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #fff;
+  border: 1px solid #E0D5C8;
+  border-radius: 12px;
+  padding: 12px;
+}
+
+.person-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #F5EDE4;
+  color: #7A6A5A;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 700;
+  flex-shrink: 0;
+  border: 1px solid #E0D5C8;
+}
+
+.teacher-avatar {
+  background: linear-gradient(135deg, #d4913b, #c07828);
+  color: #fff;
+  border-color: #d4913b;
+  width: 44px;
+  height: 44px;
+  font-size: 0;
+}
+
+.teacher-avatar svg {
+  width: 24px;
+  height: 24px;
+  fill: #fff;
+}
+
+.student-avatar {
+  background: #f0e0f0;
+  color: #a0344a;
+  border-color: #e0c0d0;
+}
+
+.teacher-card {
+  border: 1px solid rgba(212, 145, 59, 0.25);
+  background: linear-gradient(145deg, #fff, #FDF6EE);
+}
+
+.teacher-section {
+  border-color: rgba(212, 145, 59, 0.15);
+}
+
+.person-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.person-name-wrap {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+}
+
+.person-name-wrap .person-name {
+  min-width: 0;
+  flex: 1 1 auto;
+}
+
+.person-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: #2C1810;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.person-meta {
+  font-size: 11px;
+  color: #7A6A5A;
+  margin-top: 2px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.role-badge {
+  background: #e8f5e0;
+  color: #3a8a3a;
+  padding: 1px 6px;
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: 600;
+}
+
+.role-badge.student-badge {
+  background: #f0e0f0;
+  color: #a0344a;
+}
+
+/* ============================================================
+   LIGHTBOX (Lines 1607-1628)
+   Location: Full-screen image view (click gallery image)
+   Visible: When image clicked
+   Elements: Dark overlay, enlarged image
+   ============================================================ */
+#lightbox {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.95);
+  z-index: 1000;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+}
+
+#lightbox img {
+  max-width: 95%;
+  max-height: 85vh;
+  border-radius: 10px;
+}
+
+#lightbox.active {
+  display: flex;
+}
+
+/* ============================================================
+   SEARCH (Lines 1629-1738)
+   Location: Music Library tab - top toolbar
+   Visible: Teacher, Student
+   Elements: Search bar, Upload button, Share modal options
+   ============================================================ */
+.music-toolbar {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  margin-bottom: 14px;
+}
+
+.search-bar {
+  width: 100%;
+  padding: 12px 16px;
+  background: #fff;
+  border: 1px solid #D5C8B8;
+  border-radius: 12px;
+  color: #2C1810;
+  font-size: 15px;
+  margin-bottom: 0;
+  -webkit-appearance: none;
+}
+
+.search-bar::placeholder {
+  color: #A09080;
+}
+
+.search-bar:focus {
+  outline: none;
+  border-color: #d4913b;
+  box-shadow: 0 0 0 3px rgba(212, 145, 59, 0.12);
+}
+
+.upload-audio-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: linear-gradient(135deg, #d4913b, #b07028); /* Upload button color */
+  color: #fff;
+  border: none;
+  border-radius: 12px;
+  padding: 12px 16px;  /* Button size */
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  touch-action: manipulation;
+  transition: all 0.15s;
+}
+
+.upload-audio-btn:hover {
+  box-shadow: 0 4px 12px rgba(212, 145, 59, 0.3);
+}
+
+.upload-audio-btn:active {
+  transform: scale(0.97);
+}
+
+.student-mode .upload-audio-btn {
+  display: none;
+}
+
+/* Share modal options */
+.share-options {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.share-option-btn {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  border-radius: 12px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+  transition: all 0.15s;
+  touch-action: manipulation;
+  border: 1px solid #E0D5C8;
+}
+
+.share-option-btn.whatsapp {
+  background: #25D366;
+  color: #fff;
+  border-color: #25D366;
+}
+
+.share-option-btn.whatsapp:hover {
+  background: #1da851;
+}
+
+.share-option-btn.sms {
+  background: #007AFF;
+  color: #fff;
+  border-color: #007AFF;
+}
+
+.share-option-btn.sms:hover {
+  background: #0063cc;
+}
+
+.share-option-btn.copy {
+  background: #fff;
+  color: #2C1810;
+}
+
+.share-option-btn.copy:hover {
+  border-color: #d4913b;
+}
+
+/* ============================================================
+   TOAST (Lines 1739-1783)
+   Location: Floating message above nav (bottom of screen)
+   Visible: After save, delete, undo, etc.
+   Elements: "Saved!", "Link copied!", error messages
+   ============================================================ */
+.toast {
+  position: fixed;
+  bottom: 88px;
+  left: 50%;
+  transform: translateX(-50%) translateY(20px);
+  background: #2C1810;
+  color: #fff;
+  padding: 10px 20px;
+  border-radius: 12px;
+  font-size: 13px;
+  font-weight: 500;
+  opacity: 0;
+  transition: all 0.3s ease;
+  z-index: 200;
+  pointer-events: none;
+  white-space: nowrap;
+  border: none;
+  box-shadow: 0 4px 16px rgba(44, 24, 16, 0.3);
+}
+
+.toast.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+  pointer-events: auto;
+}
+
+.toast.error {
+  background: #cc3333;
+  color: #fff;
+  border: none;
+}
+
+.undo-toast-btn {
+  background: rgba(255, 255, 255, 0.12);
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 6px;
+  padding: 3px 12px;
+  font-size: 12px;
+  cursor: pointer;
+  margin-left: 10px;
+  font-weight: 600;
+}
+
+/* ============================================================
+   STUDENT DASHBOARD (Lines 1784-2133)
+   Location: Student Home + Music (browse) + assignments
+   Visible: Student only
+   Elements: Name picker, welcome, streak, practice calendar,
+             assignment cards, "I practiced!", browse raga list
+   ============================================================ */
+.picker-card {
+  text-align: center;
+  padding: 40px 20px;
+}
+
+.picker-card h2 {
+  margin-bottom: 6px;
+}
+
+.picker-sub {
+  color: #7A6A5A;
+  font-size: 13px;
+  margin-bottom: 20px;
+}
+
+#student-name-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-width: 320px;
+  margin: 0 auto;
+}
+
+.name-pick-btn {
+  background: #fff;
+  border: 1px solid #E0D5C8;
+  border-radius: 12px;
+  padding: 14px 20px;
+  color: #2C1810;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+  text-align: left;
+}
+
+.name-pick-btn:hover {
+  border-color: #d4913b;
+  transform: translateX(4px);
+}
+
+.name-pick-btn:active {
+  transform: scale(0.98);
+}
+
+.student-welcome {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 16px;
+}
+
+.welcome-left h2 {
+  margin-bottom: 2px;
+  font-size: 22px;
+}
+
+#student-date-display {
+  color: #7A6A5A;
+  font-size: 13px;
+}
+
+.streak-pill {
+  background: linear-gradient(135deg, #d4913b, #c07828);
+  border: none;
+  border-radius: 20px;
+  padding: 6px 14px;
+  font-size: 14px;
+  font-weight: 700;
+  color: #fff;
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.streak-fire {
+  font-size: 18px;
+}
+
+/* Practice Calendar (14-day row) */
+.practice-calendar {
+  display: flex;
+  gap: 4px;
+  justify-content: center;
+  margin-bottom: 20px;
+  padding: 14px;
+  background: #fff;
+  border: 1px solid #E0D5C8;
+  border-radius: 14px;
+  box-shadow: 0 1px 4px rgba(44, 24, 16, 0.06);
+}
+
+.cal-day {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  min-width: 32px;
+}
+
+.cal-label {
+  font-size: 9px;
+  color: #A09080;
+  text-transform: uppercase;
+  font-weight: 600;
+}
+
+.cal-dot {
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 700;
+  transition: all 0.15s;
+}
+
+.cal-dot.today {
+  border: 2px solid #d4913b;
+}
+
+.cal-dot.empty {
+  background: #F5EDE4;
+  color: #D5C8B8;
+}
+
+.cal-dot.practiced {
+  background: #e8f5e0;
+  color: #3a8a3a;
+}
+
+.cal-dot.missed {
+  background: #fde8e8;
+  color: #cc5555;
+}
+
+.section-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: #2C1810;
+  margin-bottom: 10px;
+}
+
+/* Assignment cards */
+.assignment-card {
+  background: #fff;
+  border: 1px solid #E0D5C8;
+  border-radius: 14px;
+  padding: 16px;
+  margin-bottom: 10px;
+  box-shadow: 0 1px 4px rgba(44, 24, 16, 0.06);
+}
+
+.assignment-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 10px;
+}
+
+.assignment-raga {
+  font-size: 16px;
+  font-weight: 700;
+  color: #2C1810;
+}
+
+.assignment-meta {
+  font-size: 12px;
+  color: #7A6A5A;
+  margin-top: 2px;
+}
+
+.assignment-notes {
+  font-size: 13px;
+  color: #7A6A5A;
+  margin-bottom: 10px;
+  font-style: italic;
+  padding: 8px 12px;
+  background: #F5EDE4;
+  border-radius: 8px;
+  border-left: 3px solid #d4913b;
+}
+
+.assignment-card audio {
+  width: 100%;
+  height: 40px;
+  margin-bottom: 10px;
+}
+
+.practice-btn {
+  width: 100%;
+  padding: 14px;
+  border-radius: 12px;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.practice-btn.not-done {
+  background: linear-gradient(135deg, #3a8a3a, #2a7a2a);
+  border: 1px solid #3a8a3a;
+  color: #fff;
+}
+
+.practice-btn.not-done:hover {
+  box-shadow: 0 2px 16px rgba(58, 138, 58, 0.25);
+  transform: translateY(-1px);
+}
+
+.practice-btn.not-done:active {
+  transform: scale(0.98);
+}
+
+.practice-btn.done {
+  background: #e8f5e0;
+  border: 1px solid #3a8a3a;
+  color: #3a8a3a;
+}
+
+.practice-btn.done svg {
+  fill: #3a8a3a;
+}
+
+.practice-form {
+  background: #F5EDE4;
+  border: 1px solid #E0D5C8;
+  border-radius: 12px;
+  padding: 12px;
+}
+
+.practice-done-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px;
+  background: #e8f5e0;
+  border: 1px solid #3a8a3a;
+  border-radius: 12px;
+}
+
+.practice-done-label {
+  color: #3a8a3a;
+  font-weight: 700;
+  font-size: 15px;
+}
+
+.practice-undo-btn {
+  background: none;
+  border: 1px solid #3a8a3a;
+  border-radius: 8px;
+  color: #3a8a3a;
+  padding: 4px 12px;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.practice-undo-btn:hover {
+  border-color: #2a7a2a;
+  color: #2a7a2a;
+}
+
+/* Student browse (read-only raga cards) */
+.browse-raga {
+  background: #fff;
+  border: 1px solid #E0D5C8;
+  border-radius: 14px;
+  margin-bottom: 10px;
+  overflow: hidden;
+  box-shadow: 0 1px 4px rgba(44, 24, 16, 0.06);
+}
+
+.browse-raga-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  cursor: pointer;
+}
+
+.browse-raga-header h4 {
+  font-size: 14px;
+  font-weight: 600;
+  color: #2C1810;
+}
+
+.browse-raga-body {
+  padding: 0 16px 12px;
+}
+
+.browse-raga-body.collapsed {
+  display: none;
+}
+
+.browse-item {
+  padding: 10px;
+  background: #F5EDE4;
+  border: 1px solid #E0D5C8;
+  border-radius: 10px;
+  margin-bottom: 6px;
+}
+
+.browse-item-name {
+  font-size: 12px;
+  color: #7A6A5A;
+  margin-bottom: 6px;
+}
+
+.browse-item-tags {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-bottom: 6px;
+}
+
+.browse-tag {
+  padding: 2px 8px;
+  border-radius: 6px;
+  font-size: 10px;
+  font-weight: 600;
+}
+
+.browse-tag.type {
+  background: #FFF5E8;
+  color: #c07828;
+}
+
+.browse-tag.taal {
+  background: #f0e0f0;
+  color: #a0344a;
+}
+
+.browse-tag.paltaa {
+  background: #e8f5e0;
+  color: #3a8a3a;
+}
+
+.browse-item audio {
+  width: 100%;
+  height: 32px;
+}
+
+/* ============================================================
+   UNDO FAB (Lines 2134-2164)
+   Location: Floating button bottom-right (Music Library)
+   Visible: Teacher only, after editing categories
+   Elements: "Undo" button with count
+   ============================================================ */
+#undo-fab {
+  display: none;
+  position: fixed;
+  bottom: 88px;
+  right: 16px;
+  background: linear-gradient(135deg, #d4913b, #c07828);
+  color: #fff;
+  border: none;
+  border-radius: 14px;
+  padding: 10px 14px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  z-index: 150;
+  align-items: center;
+  gap: 6px;
+  box-shadow: 0 4px 16px rgba(212, 145, 59, 0.3);
+}
+
+#undo-fab:hover {
+  transform: scale(1.05);
+}
+
+.undo-count {
+  background: rgba(255, 255, 255, 0.15);
+  padding: 1px 6px;
+  border-radius: 6px;
+  font-size: 11px;
+}
+
+/* ============================================================
+   STUDENT MODE - hide editing (Lines 2165-2197)
+   Location: When Student role selected - Music Library
+   Visible: Hides edit controls so students see read-only view
+   Elements: Hides drag handle, edit icon, dropdowns, undo FAB
+   ============================================================ */
+.student-mode .drag-handle {
+  display: none;
+}
+
+.student-mode .edit-icon {
+  display: none;
+}
+
+.student-mode .tag-select {
+  pointer-events: none;
+  opacity: 0.7;
+  background-image: none;
+  padding-right: 10px;
+}
+
+.student-mode .paltaa-btn {
+  pointer-events: none;
+  opacity: 0.7;
+}
+
+.student-mode #undo-fab {
+  display: none !important;
+}
+
+.student-mode .music-item {
+  cursor: default;
+}
+
+.student-mode .music-item[draggable] {
+  draggable: false;
+}
+
+/* ============================================================
+   PARENT DASHBOARD (Lines 2198-2442)
+   Location: Parent Home tab
+   Visible: Parent only
+   Elements: Child cards, practice summary, fee card, Venmo btn,
+             mark payment, payment history, upcoming events
+   ============================================================ */
+.parent-welcome {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 20px;
+}
+
+/* Child practice summary card */
+.child-card {
+  background: #fff;
+  border: 1px solid #E0D5C8;
+  border-radius: 16px;
+  padding: 18px;
+  margin-bottom: 12px;
+  box-shadow: 0 1px 4px rgba(44, 24, 16, 0.06);
+}
+
+.child-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.child-name {
+  font-size: 17px;
+  font-weight: 700;
+  color: #2C1810;
+}
+
+.child-streak {
+  background: linear-gradient(135deg, #d4913b, #c07828);
+  border: none;
+  border-radius: 16px;
+  padding: 4px 12px;
+  font-size: 13px;
+  font-weight: 700;
+  color: #fff;
+}
+
+.child-mini-cal {
+  display: flex;
+  gap: 4px;
+  justify-content: center;
+  margin-bottom: 10px;
+}
+
+.child-mini-cal .cal-dot {
+  width: 24px;
+  height: 24px;
+  font-size: 10px;
+}
+
+.child-practice-stat {
+  font-size: 13px;
+  color: #7A6A5A;
+  text-align: center;
+}
+
+.child-practice-stat strong {
+  color: #2C1810;
+}
+
+/* Fee card */
+.fee-card {
+  background: #fff;
+  border: 1px solid #E0D5C8;
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow: 0 1px 4px rgba(44, 24, 16, 0.06);
+}
+
+.fee-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 0;
+  border-bottom: 1px solid #F0E8E0;
+}
+
+.fee-row:last-child {
+  border-bottom: none;
+}
+
+.fee-label {
+  font-size: 13px;
+  color: #7A6A5A;
+}
+
+.fee-value {
+  font-size: 15px;
+  font-weight: 700;
+  color: #2C1810;
+}
+
+.fee-value.highlight {
+  color: #d4913b;
+  font-size: 18px;
+}
+
+.fee-value.paid {
+  color: #3a8a3a;
+}
+
+.venmo-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 14px;
+  margin-top: 14px;
+  background: linear-gradient(135deg, #008CFF, #0070cc);
+  border: none;
+  border-radius: 12px;
+  color: #fff;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  text-decoration: none;
+  transition: all 0.15s;
+}
+
+.venmo-btn:hover {
+  box-shadow: 0 4px 16px rgba(0, 140, 255, 0.3);
+  transform: translateY(-1px);
+}
+
+.venmo-btn:active {
+  transform: scale(0.98);
+}
+
+.mark-payment-btn {
+  display: block;
+  width: 100%;
+  padding: 12px;
+  margin-top: 8px;
+  background: #F5EDE4;
+  border: 1px solid #E0D5C8;
+  border-radius: 10px;
+  color: #7A6A5A;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.mark-payment-btn:hover {
+  border-color: #d4913b;
+  color: #2C1810;
+}
+
+.payment-history {
+  margin-top: 12px;
+}
+
+.payment-entry {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 12px;
+  background: #F5EDE4;
+  border-radius: 8px;
+  margin-bottom: 4px;
+  font-size: 12px;
+}
+
+.payment-entry .pay-date {
+  color: #7A6A5A;
+}
+
+.payment-entry .pay-amount {
+  color: #3a8a3a;
+  font-weight: 600;
+}
+
+.payment-entry .pay-note {
+  color: #A09080;
+}
+
+/* Event list for parents */
+.parent-event {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  padding: 14px;
+  background: #fff;
+  border: 1px solid #E0D5C8;
+  border-radius: 12px;
+  margin-bottom: 8px;
+}
+
+.parent-event-date {
+  background: linear-gradient(135deg, #d4913b, #c07828);
+  border: none;
+  border-radius: 8px;
+  padding: 8px 10px;
+  text-align: center;
+  min-width: 50px;
+}
+
+.parent-event-date .pe-month {
+  font-size: 10px;
+  color: #fff;
+  text-transform: uppercase;
+  font-weight: 700;
+  opacity: 0.85;
+}
+
+.parent-event-date .pe-day {
+  font-size: 20px;
+  color: #fff;
+  font-weight: 800;
+  line-height: 1.1;
+}
+
+.parent-event-info {
+  flex: 1;
+}
+
+.parent-event-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: #2C1810;
+}
+
+.parent-event-meta {
+  font-size: 12px;
+  color: #7A6A5A;
+  margin-top: 2px;
+}
+
+/* Mark payment modal inline */
+.payment-form {
+  padding: 14px;
+  background: #F5EDE4;
+  border: 1px solid #E0D5C8;
+  border-radius: 12px;
+  margin-top: 10px;
+}
+
+.payment-form .modal-row {
+  margin-bottom: 10px;
+}
+
+/* ============================================================
+   AI CHAT PANEL (Lines 2443-2741)
+   Location: Floating chat button (bottom-right) + chat panel
+   Visible: All roles when opened
+   Elements: AI FAB button, chat window, messages, input, send
+   ============================================================ */
+#ai-fab {
+  position: fixed;
+  bottom: 80px;
+  right: 16px;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #d4913b, #b07028);
+  border: none;
+  color: #fff;
+  cursor: pointer;
+  z-index: 999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 16px rgba(212, 145, 59, 0.4);
+  transition: all 0.2s;
+}
+
+#ai-fab:hover {
+  transform: scale(1.1);
+  box-shadow: 0 6px 24px rgba(212, 145, 59, 0.6);
+}
+
+#ai-fab:active {
+  transform: scale(0.95);
+}
+
+#ai-chat-panel {
+  position: fixed;
+  bottom: 70px;
+  right: 12px;
+  left: 12px;
+  max-width: 420px;
+  height: 60vh;
+  max-height: 500px;
+  background: #fff;
+  border: 1px solid #E0D5C8;
+  border-radius: 16px;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 8px 40px rgba(44, 24, 16, 0.2);
+  overflow: hidden;
+}
+
+@media (min-width: 500px) {
+  #ai-chat-panel {
+    left: auto;
+    right: 16px;
+  }
+}
+
+.ai-chat-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 16px;
+  background: #2C1810;
+  border-bottom: 1px solid #3A2518;
+}
+
+.ai-chat-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 700;
+  color: #fff;
+}
+
+.ai-chat-close {
+  background: none;
+  border: none;
+  color: #baa88e;
+  font-size: 22px;
+  cursor: pointer;
+  padding: 0 4px;
+  line-height: 1;
+}
+
+.ai-chat-close:hover {
+  color: #fff;
+}
+
+#ai-chat-messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.ai-msg {
+  display: flex;
+  max-width: 90%;
+}
+
+.ai-msg.ai-user {
+  align-self: flex-end;
+}
+
+.ai-msg.ai-bot {
+  align-self: flex-start;
+}
+
+.ai-msg-content {
+  padding: 10px 14px;
+  border-radius: 14px;
+  font-size: 13px;
+  line-height: 1.6;
+  word-break: break-word;
+}
+
+.ai-user .ai-msg-content {
+  background: linear-gradient(135deg, #d4913b, #b07028);
+  color: #fff;
+  border-bottom-right-radius: 4px;
+}
+
+.ai-bot .ai-msg-content {
+  background: #F5EDE4;
+  border: 1px solid #E0D5C8;
+  color: #2C1810;
+  border-bottom-left-radius: 4px;
+}
+
+.ai-bot .ai-msg-content strong {
+  color: #2C1810;
+}
+
+.ai-bot .ai-msg-content code {
+  background: #E0D5C8;
+  padding: 1px 5px;
+  border-radius: 4px;
+  font-size: 12px;
+}
+
+.ai-bot .ai-msg-content a {
+  color: #c07828;
+  text-decoration: none;
+}
+
+.ai-bot .ai-msg-content a:hover {
+  text-decoration: underline;
+}
+
+.ai-suggestion {
+  display: inline-block;
+  background: #F5EDE4;
+  border: 1px solid #E0D5C8;
+  border-radius: 16px;
+  padding: 4px 12px;
+  font-size: 12px;
+  color: #d4913b;
+  cursor: pointer;
+  margin: 3px 2px;
+  transition: all 0.15s;
+}
+
+.ai-suggestion:hover {
+  background: #E0D5C8;
+  border-color: #d4913b;
+  color: #c07828;
+}
+
+.ai-chat-input-area {
+  display: flex;
+  gap: 8px;
+  padding: 12px;
+  border-top: 1px solid #E0D5C8;
+  background: #FDF6EE;
+}
+
+#ai-chat-input {
+  flex: 1;
+  background: #fff;
+  border: 1px solid #D5C8B8;
+  border-radius: 10px;
+  padding: 10px 14px;
+  color: #2C1810;
+  font-size: 13px;
+  outline: none;
+}
+
+#ai-chat-input:focus {
+  border-color: #d4913b;
+}
+
+#ai-chat-input::placeholder {
+  color: #A09080;
+}
+
+.ai-send-btn {
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #d4913b, #b07028);
+  border: none;
+  color: #fff;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s;
+}
+
+.ai-send-btn:hover {
+  transform: scale(1.05);
+}
+
+.ai-send-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.ai-typing {
+  display: flex;
+  gap: 4px;
+  padding: 4px 0;
+}
+
+.ai-typing span {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #5a5a7a;
+  animation: aiBounce 1.4s infinite;
+}
+
+.ai-typing span:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.ai-typing span:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+@keyframes aiBounce {
+  0%, 80%, 100% {
+    transform: scale(0);
+  }
+  40% {
+    transform: scale(1);
+  }
+}
+
+/* Resource links on raga headers */
+.raga-resources {
+  display: flex;
+  gap: 6px;
+  margin-left: auto;
+}
+
+.raga-resource-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 10px;
+  background: #F5EDE4;
+  border: 1px solid #E0D5C8;
+  border-radius: 14px;
+  font-size: 10px;
+  color: #7A6A5A;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.15s;
+  white-space: nowrap;
+}
+
+.raga-resource-btn:hover {
+  border-color: #d4913b;
+  color: #2C1810;
+  transform: translateY(-1px);
+}
+
+.raga-resource-btn svg {
+  width: 12px;
+  height: 12px;
+  fill: currentColor;
+}
+
+.raga-resource-btn.yt:hover {
+  border-color: #ff4444;
+  color: #ff6666;
+}
+
+.raga-resource-btn.sp:hover {
+  border-color: #1DB954;
+  color: #1DB954;
+}
+
+.raga-resource-btn.wiki:hover {
+  border-color: #7c9dff;
+  color: #7c9dff;
+}
+
+/* ============================================================
+   DESKTOP - responsive overrides (Lines 2742-end)
+   Location: App when screen width >= 768px
+   Visible: All roles on tablet/desktop
+   Elements: Nav moves to top, larger layout, modal centered
+   ============================================================ */
+@media (min-width: 768px) {
+  header {
+    padding: 24px 32px 20px;
+  }
+
+  header h1 {
+    font-size: 26px;
+  }
+
+  main {
+    padding: 24px 32px;
+  }
+
+  body {
+    padding-bottom: 0;
+  }
+
+  .gallery {
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 8px;
+  }
+
+  .people-grid {
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  }
+
+  .toast {
+    bottom: 32px;
+  }
+
+  #undo-fab {
+    bottom: 32px;
+    right: 32px;
+  }
+
+  nav {
+    position: static;
+    border-top: none;
+    border-bottom: 1px solid rgba(212, 145, 59, 0.2);
+    padding: 0 32px;
+    backdrop-filter: none;
+    background: rgba(44, 24, 16, 0.98);
+  }
+
+  nav button {
+    flex: none;
+    flex-direction: row;
+    padding: 14px 20px;
+    font-size: 14px;
+    gap: 8px;
+    border-bottom: 2px solid transparent;
+  }
+
+  nav button.active {
+    border-bottom-color: #d4913b;
+  }
+
+  nav button.active::before {
+    display: none;
+  }
+
+  nav button svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  .raga-edit-input {
+    width: 300px;
+  }
+
+  .action-cards {
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+
+  .action-card {
+    flex: 1;
+    min-width: 280px;
+  }
+
+  .modal {
+    align-items: center;
+  }
+
+  .modal-content {
+    border-radius: 20px;
+    max-height: 80vh;
+  }
+
+  .modal-header {
+    border-radius: 20px 20px 0 0;
+  }
+
+  .role-cards {
+    flex-direction: row;
+    max-width: 700px;
+  }
+
+  .role-card {
+    flex: 1;
+    flex-direction: column;
+    text-align: center;
+    padding: 28px 20px;
+  }
+
+  #global-switch-btn {
+    top: 24px;
+    right: 32px;
+  }
+}

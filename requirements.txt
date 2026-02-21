@@ -1,0 +1,3 @@
+# Music Class Organizer
+google-generativeai
+python-dotenv

@@ -76,7 +76,7 @@ These platforms provide TLS and usually a public URL. You run the app as an HTTP
 1. Connect repo to the PaaS.
 2. Set env: `SESSION_SECRET`, optionally `HOST=0.0.0.0`, `PORT` if fixed, `GOOGLE_API_KEY` if using AI.
 3. Set start command: `python src/app.py`; ensure run from project root.
-4. If the app writes to `data/` or `media/`, attach a persistent volume/disk and point paths there (or use object storage later).
+4. If the app writes to `data/` or `media/`, attach a persistent volume/disk and set **DATA_DIR** and **MEDIA_DIR** to the mount path (e.g. `/data`). The app reads these from the environment and uses them when set; otherwise it uses `data/` and `media/` under the project root.
 5. Open the generated **HTTPS** URL and run the smoke tests above.
 
 ---

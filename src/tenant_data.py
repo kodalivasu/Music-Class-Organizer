@@ -7,10 +7,12 @@ Legacy single-tenant files are treated as teacher_id 1 on first read.
 """
 
 import json
+import os
 from pathlib import Path
 
 BASE_DIR = Path(__file__).parent.parent
-DATA_DIR = BASE_DIR / "data"
+_DATA_DIR_ENV = os.getenv("DATA_DIR")
+DATA_DIR = Path(_DATA_DIR_ENV) if _DATA_DIR_ENV else BASE_DIR / "data"
 
 
 def _load_raw(filename, default=None):

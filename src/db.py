@@ -3,21 +3,29 @@ SQLite DB for Music Class Organizer.
 Initializes DB and teachers table (id, email, password_hash, display_name).
 """
 
+import os
 import sqlite3
 from pathlib import Path
 
-# DB file next to project data
 BASE_DIR = Path(__file__).parent.parent
-DB_PATH = BASE_DIR / "data" / "music_class.db"
+_DATA_DIR_ENV = os.getenv("DATA_DIR")
+DATA_DIR = Path(_DATA_DIR_ENV) if _DATA_DIR_ENV else BASE_DIR / "data"
+DB_PATH = DATA_DIR / "music_class.db"
 
 
 def get_connection():
     """Return a connection to the SQLite DB, creating file and schema if needed."""
-    DB_PATH.parent.mkdir(parents=True, exist_ok=True)
+    DATA_DIR.mkdir(parents=True, exist_ok=True)
     conn = sqlite3.connect(DB_PATH)
     conn.row_factory = sqlite3.Row
     init_schema(conn)
     return conn
+
+
+def teacher_count() -> int:
+    """Return the number of teachers in the DB (for first-teacher signup)."""
+    with get_connection() as conn:
+        return conn.execute("SELECT COUNT(*) FROM teachers").fetchone()[0]
 
 
 def init_schema(conn: sqlite3.Connection) -> None:

@@ -17,6 +17,7 @@ Run: python src/app.py
 Then open: http://localhost:8000
 """
 
+import hashlib
 import html
 import json
 import os
@@ -29,6 +30,7 @@ from urllib.parse import parse_qs, urlparse
 
 from auth import get_session, create_session, verify_teacher, session_cookie_header_value, resolve_student_by_pin, set_student_pin, consume_parent_token, create_parent_token, SESSION_COOKIE_NAME
 import tenant_data
+from db import get_connection, teacher_count
 
 try:
     from dotenv import load_dotenv
@@ -57,8 +59,10 @@ except ImportError:
 # ---------------------------------------------------------------------------
 
 BASE_DIR = Path(__file__).parent.parent
-DATA_DIR = BASE_DIR / "data"
-MEDIA_DIR = BASE_DIR / "media"
+_DATA_DIR_ENV = os.getenv("DATA_DIR")
+_MEDIA_DIR_ENV = os.getenv("MEDIA_DIR")
+DATA_DIR = Path(_DATA_DIR_ENV) if _DATA_DIR_ENV else BASE_DIR / "data"
+MEDIA_DIR = Path(_MEDIA_DIR_ENV) if _MEDIA_DIR_ENV else BASE_DIR / "media"
 
 # ---------------------------------------------------------------------------
 # Data helpers
@@ -1088,6 +1092,22 @@ def _login_page(error_message: str = "") -> str:
     )
 
 
+def _first_teacher_signup_page(error_message: str = "") -> str:
+    """One-time form to create the first teacher when the DB has no teachers."""
+    err = f'<p class="login-error">{error_message}</p>' if error_message else ""
+    return _login_wrapper(
+        "<h1>&#9835; Music Class Organizer</h1><h2>Create first teacher account</h2>"
+        "<p style='font-size:14px;color:#6a5a4a;margin-bottom:16px;'>No teacher exists yet. Create an account to get started.</p>"
+        "<form method='post' action='/signup' class='login-form'>"
+        "<label class='login-label'>Email <input type='email' name='email' class='modal-input' required></label>"
+        "<label class='login-label'>Password <input type='password' name='password' class='modal-input' required minlength='6' placeholder='At least 6 characters'></label>"
+        "<label class='login-label'>Display name (optional) <input type='text' name='display_name' class='modal-input' placeholder='e.g. Vaishnavi'></label>"
+        "<button type='submit' class='save-btn'>Create account</button></form>"
+        f"{err}",
+        "Create account",
+    )
+
+
 def _student_login_page(error_message: str = "") -> str:
     """Login form for student: name + PIN."""
     err = f'<p class="login-error">{error_message}</p>' if error_message else ""
@@ -1208,7 +1228,10 @@ class AppHandler(SimpleHTTPRequestHandler):
 
         if parsed.path == "/login":
             err = "Invalid email or password." if parse_qs(parsed.query).get("error") else ""
-            html = _login_page(err)
+            if teacher_count() == 0:
+                html = _first_teacher_signup_page()
+            else:
+                html = _login_page(err)
             self.send_response(200)
             self.send_header("Content-Type", "text/html; charset=utf-8")
             self.send_header("Cache-Control", "no-cache")
@@ -1408,6 +1431,54 @@ class AppHandler(SimpleHTTPRequestHandler):
                 return
             self.send_response(302)
             self.send_header("Location", "/login?error=1")
+            self.end_headers()
+            return
+
+        # --- First-teacher signup (form POST) ---
+        if parsed.path == "/signup":
+            form = parse_qs(body.decode("utf-8", errors="replace"))
+            email = (form.get("email") or [""])[0].strip().lower()
+            password = (form.get("password") or [""])[0]
+            display_name = (form.get("display_name") or [""])[0].strip() or ""
+            if not email or not password:
+                html = _first_teacher_signup_page("Email and password are required.")
+                self.send_response(200)
+                self.send_header("Content-Type", "text/html; charset=utf-8")
+                self.end_headers()
+                self.wfile.write(html.encode("utf-8"))
+                return
+            if len(password) < 6:
+                html = _first_teacher_signup_page("Password must be at least 6 characters.")
+                self.send_response(200)
+                self.send_header("Content-Type", "text/html; charset=utf-8")
+                self.end_headers()
+                self.wfile.write(html.encode("utf-8"))
+                return
+            if teacher_count() != 0:
+                self.send_response(302)
+                self.send_header("Location", "/login")
+                self.end_headers()
+                return
+            password_hash = hashlib.sha256(password.encode("utf-8")).hexdigest()
+            try:
+                with get_connection() as conn:
+                    conn.execute(
+                        "INSERT INTO teachers (email, password_hash, display_name) VALUES (?, ?, ?)",
+                        (email, password_hash, display_name),
+                    )
+                    conn.commit()
+                    teacher_id = conn.execute("SELECT last_insert_rowid()").fetchone()[0]
+            except Exception:
+                html = _first_teacher_signup_page("That email may already be in use. Try logging in.")
+                self.send_response(200)
+                self.send_header("Content-Type", "text/html; charset=utf-8")
+                self.end_headers()
+                self.wfile.write(html.encode("utf-8"))
+                return
+            session = create_session("teacher", teacher_id=teacher_id)
+            self.send_response(302)
+            self.send_header("Location", "/")
+            self.send_header("Set-Cookie", session_cookie_header_value(session))
             self.end_headers()
             return
 

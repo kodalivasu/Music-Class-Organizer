@@ -48,6 +48,7 @@ An app to organize my kids' music class by extracting and structuring data from 
 - Message format: `[TIME, DATE] SENDER: MESSAGE`
 - Teacher: Vaishnavi Kondapalli
 - Practice recordings shared via Google Drive links
+- **First teacher (local):** Tenant data is keyed by teacher_id 1. Run `python scripts/seed_first_teacher.py` once so the first teacher can log in as vaishnavikondapalli@yahoo.com / Vaishnavi and see all uploaded students, contacts, and music.
 
 ## Current priorities
 

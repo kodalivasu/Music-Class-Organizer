@@ -25,4 +25,4 @@ env/
 
 # Data and media — push to repo for Render; exclude WhatsApp exports and DB
 data/whatsapp-export/
-data/*.db
+

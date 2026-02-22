@@ -427,3 +427,6 @@ WhatsApp exports in format: `[TIME, DATE] SENDER: MESSAGE`
 ### Deployment
 - **docs/DEPLOYMENT.md** — HTTPS requirement, pre-deploy checklist, PaaS options (Railway, Render, Fly.io, etc.), and reverse-proxy options (Caddy, nginx, Cloudflare Tunnel) for production.
 - **DATA_DIR / MEDIA_DIR:** App and tenant_data read `DATA_DIR` and `MEDIA_DIR` from the environment when set (e.g. on Render with a persistent disk at `/data`); otherwise they use `data/` and `media/` under the project root. Enables persistent storage on PaaS.
+
+### Local setup — first teacher
+- Tenant data (students, contacts, attendance, music metadata) is keyed by `teacher_id`; existing JSON uses key `"1"`. To have the first teacher own that data and log in with a fixed email/password, run once: `python scripts/seed_first_teacher.py`. This ensures teacher id=1 exists with email `vaishnavikondapalli@yahoo.com` and password `Vaishnavi`. Media for that teacher should live under `media/events/1/` and `media/audio/1/` (see `scripts/migrate_media_to_tenant_dirs.py` if migrating from legacy paths).

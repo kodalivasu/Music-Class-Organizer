@@ -1346,12 +1346,17 @@ class AppHandler(SimpleHTTPRequestHandler):
             self._send_json({"url": url})
             return
 
-        # Serve media files
+        # Serve media files (resolve under MEDIA_DIR so disk path works on Render)
         if parsed.path.startswith("/media/"):
-            file_path = BASE_DIR / parsed.path.lstrip("/")
+            rel = parsed.path[7:].lstrip("/")  # path after "/media/"
+            if not rel or ".." in rel:
+                self.send_response(403)
+                self.end_headers()
+                return
+            file_path = (MEDIA_DIR / rel).resolve()
             try:
-                file_path = file_path.resolve()
-                if not str(file_path).startswith(str(MEDIA_DIR.resolve())):
+                med = MEDIA_DIR.resolve()
+                if not str(file_path).startswith(str(med)):
                     self.send_response(403)
                     self.end_headers()
                     return

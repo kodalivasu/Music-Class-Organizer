@@ -1854,7 +1854,8 @@ def main():
     session_secret = os.getenv("SESSION_SECRET", _DEV_SESSION_SECRET)
     is_dev_secret = session_secret == _DEV_SESSION_SECRET
     is_non_localhost = host in ("0.0.0.0",) or host not in ("localhost", "127.0.0.1")
-    if is_dev_secret and is_non_localhost:
+    on_render = os.getenv("RENDER") == "true"
+    if is_dev_secret and is_non_localhost and not on_render:
         print(
             "\n  Security: Refusing to bind to non-localhost with dev SESSION_SECRET.\n"
             "  Set SESSION_SECRET in .env (e.g. openssl rand -hex 32) for network access,\n"
@@ -1862,6 +1863,11 @@ def main():
             file=sys.stderr,
         )
         sys.exit(1)
+    if on_render and is_dev_secret:
+        print(
+            "\n  Warning: Running on Render with default SESSION_SECRET. Set SESSION_SECRET in Render Environment for production.\n",
+            file=sys.stderr,
+        )
     server = HTTPServer((host, port), AppHandler)
     print(f"\n  Music Class Organizer (Phase 2)")
     print(f"  http://{host}:{port}")

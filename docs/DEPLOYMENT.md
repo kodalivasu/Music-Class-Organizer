@@ -31,7 +31,7 @@ Use this before going live.
 
 | Variable | Required in prod? | Notes |
 |----------|-------------------|--------|
-| `SESSION_SECRET` | **Yes** | Long random string; e.g. `openssl rand -hex 32`. The app refuses to bind to non-localhost if you still use the dev default. |
+| `SESSION_SECRET` | **Yes** | Long random string; e.g. `openssl rand -hex 32`. The app refuses to bind to non-localhost if you still use the dev default. On Render, the app will start anyway (with a warning) so the service can come up; set `SESSION_SECRET` in Render Environment for production security. |
 | `HOST` | Optional | Set to `0.0.0.0` if the process must accept external connections (e.g. behind a reverse proxy). |
 | `PORT` | Optional | Default `8000`. PaaS often sets this automatically. |
 | `GOOGLE_API_KEY` | Optional | Needed for AI features (explain raga, find recordings). App runs without it; AI features disabled. |

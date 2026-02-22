@@ -23,6 +23,6 @@ venv/
 .venv/
 env/
 
-# Large media and data — don't push to GitHub (use Render disk / local only)
-data/
-media/
+# Data and media — push to repo for Render; exclude WhatsApp exports and DB
+data/whatsapp-export/
+data/*.db

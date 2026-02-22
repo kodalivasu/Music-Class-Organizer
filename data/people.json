@@ -1,0 +1,89 @@
+{
+  "1": {
+    "teacher": {
+      "name": "Vaishnavi Kondapalli",
+      "role": "teacher",
+      "chat_names": [
+        "Vaishnavi  Kondapalli"
+      ],
+      "messages": 672,
+      "venmo": "@Vaishnavi-Kondapalli",
+      "fee_per_class": 0,
+      "school_name": "Kiddos - Vaishnavi Kodapalli's Music School"
+    },
+    "students": [
+      "Vaishnavi Kodali",
+      "Kieran Kodali",
+      "Bhargavi Desai",
+      "Saiba Jetly",
+      "Myra Khurana",
+      "Aanika Singh"
+    ],
+    "families": [
+      {
+        "parent": "Ankur Desai",
+        "role": "parent",
+        "chat_names": [
+          "Ankur Desai"
+        ],
+        "messages": 146
+      },
+      {
+        "parent": "Rachana Kaza",
+        "role": "parent",
+        "chat_names": [
+          "rachana kaza"
+        ],
+        "messages": 82
+      },
+      {
+        "parent": "Srinivas Kodali",
+        "role": "parent",
+        "chat_names": [
+          "srinivas kodali"
+        ],
+        "messages": 60
+      },
+      {
+        "parent": "Pushp Jetly",
+        "role": "parent",
+        "chat_names": [
+          "~ Pushp Jetly"
+        ],
+        "messages": 84
+      },
+      {
+        "parent": "Gaurav Jetly",
+        "role": "parent",
+        "chat_names": [
+          "~ Gaurav Jetly"
+        ],
+        "messages": 47
+      },
+      {
+        "parent": "Divya Kumar",
+        "role": "parent",
+        "chat_names": [
+          "~ Divya Kumar"
+        ],
+        "messages": 75
+      },
+      {
+        "parent": "Aarti Khuranaa",
+        "role": "parent",
+        "chat_names": [
+          "~ Aarti Khuranaa"
+        ],
+        "messages": 51
+      },
+      {
+        "parent": "Atul Manchanda",
+        "role": "parent",
+        "chat_names": [
+          "~ Atul Manchanda"
+        ],
+        "messages": 21
+      }
+    ]
+  }
+}

@@ -281,13 +281,35 @@ function openAttendanceHistory() {
 // ============================================================
 // ASSIGN PRACTICE
 // ============================================================
-function openAssignModal() {
+/** Sort filenames by date descending (YYYY-MM-DD prefix); no date = end. */
+function sortAudioFilesByDateDesc(files) {
+    const parseDate = (fn) => {
+        const m = (fn || '').match(/^(\d{4}-\d{2}-\d{2})/);
+        return m ? m[1] : '';
+    };
+    return [...files].sort((a, b) => {
+        const da = parseDate(a), db = parseDate(b);
+        if (!da && !db) return (a < b ? -1 : a > b ? 1 : 0);
+        if (!da) return 1;
+        if (!db) return -1;
+        return db.localeCompare(da);
+    });
+}
+
+function openAssignModal(assignment) {
     const modal = document.getElementById('assign-modal');
     modal.classList.add('active');
-    // Populate recording dropdown
+    const editing = assignment && assignment.id;
+    window.editingAssignmentId = editing ? assignment.id : null;
+    const modalTitle = document.querySelector('#assign-modal .modal-header h3');
+    modalTitle.textContent = editing ? 'Edit assignment' : 'Assign Practice';
+    const saveBtn = document.querySelector('#assign-modal .save-btn');
+    saveBtn.textContent = editing ? 'Save changes' : 'Assign Practice';
+    // Populate recording dropdown (newest first)
     const select = document.getElementById('assign-recording');
+    const sortedFiles = sortAudioFilesByDateDesc(allAudioFiles);
     let html = '<option value="">Select a recording...</option>';
-    for (const fn of allAudioFiles) {
+    for (const fn of sortedFiles) {
         const info = categories[fn];
         const raga = info ? info.raga : 'Uncategorized';
         html += '<option value="' + esc(fn) + '">' + esc(friendlyName(fn)) + ' (' + esc(raga) + ')</option>';
@@ -300,6 +322,21 @@ function openAssignModal() {
         html += '<label class="att-student"><input type="checkbox" value="' + esc(name) + '"><span class="att-check"></span><span>' + esc(name) + '</span></label>';
     }
     stuList.innerHTML = html;
+    // Pre-fill when editing
+    if (editing) {
+        document.getElementById('assign-recording').value = assignment.audio_file || '';
+        document.getElementById('assign-due').value = assignment.due_date || '';
+        document.getElementById('assign-notes').value = assignment.notes || '';
+        const to = assignment.assigned_to || [];
+        const allChecked = to.length === studentNames.length || (to.length === 1 && to[0] === 'All');
+        document.querySelectorAll('#assign-students input[type=checkbox]').forEach(cb => {
+            if (cb.value === 'All') cb.checked = allChecked;
+            else cb.checked = allChecked || to.includes(cb.value);
+        });
+    } else {
+        document.getElementById('assign-due').value = '';
+        document.getElementById('assign-notes').value = '';
+    }
 }
 
 function toggleAssignAll(cb) {
@@ -316,18 +353,118 @@ async function saveAssignment() {
     if (assignedTo.length === 0) { showToast('Please select at least one student', true, false); return; }
     const notes = document.getElementById('assign-notes').value.trim();
     const dueDate = document.getElementById('assign-due').value;
+    const editingId = window.editingAssignmentId;
 
-    const resp = await fetch('/api/assignments/create', {
+    const url = editingId ? '/api/assignments/update' : '/api/assignments/create';
+    const body = editingId
+        ? { id: editingId, audio_file: recording, assigned_to: assignedTo, notes: notes, due_date: dueDate }
+        : { audio_file: recording, assigned_to: assignedTo, notes: notes, due_date: dueDate };
+    const resp = await fetch(url, {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({ audio_file: recording, assigned_to: assignedTo, notes: notes, due_date: dueDate })
+        body: JSON.stringify(body)
     });
     const result = await resp.json();
     if (result.ok) {
-        showToast('Practice assigned to ' + assignedTo.length + ' student(s)', false, false);
+        showToast(editingId ? 'Assignment updated' : 'Practice assigned to ' + assignedTo.length + ' student(s)', false, false);
         closeModal('assign-modal');
+        window.editingAssignmentId = null;
+        if (typeof renderAssignmentsList === 'function') {
+            const listModal = document.getElementById('assignments-list-modal');
+            if (listModal && listModal.classList.contains('active')) refreshAssignmentsListModal();
+        }
+        updateTeacherAssignmentCount();
     } else {
-        showToast('Error creating assignment', true, false);
+        showToast(result.error || 'Error saving assignment', true, false);
+    }
+}
+
+async function updateTeacherAssignmentCount() {
+    const el = document.getElementById('teacher-active-assignments-count');
+    if (!el) return;
+    try {
+        const r = await fetch('/api/assignments');
+        const assignments = await r.json();
+        const n = (assignments || []).filter(a => a.status === 'active').length;
+        el.textContent = n + ' assigned';
+    } catch (e) {}
+}
+
+async function openAssignmentsListModal() {
+    const modal = document.getElementById('assignments-list-modal');
+    modal.classList.add('active');
+    await refreshAssignmentsListModal();
+}
+
+async function refreshAssignmentsListModal() {
+    const container = document.getElementById('assignments-list');
+    if (!container) return;
+    container.innerHTML = '<p class="empty-state">Loading...</p>';
+    try {
+        const r = await fetch('/api/assignments');
+        const assignments = await r.json();
+        renderAssignmentsList(assignments || [], container);
+    } catch (e) {
+        container.innerHTML = '<p class="empty-state">Error loading assignments.</p>';
+    }
+}
+
+function renderAssignmentsList(assignments, container) {
+    const active = assignments.filter(a => a.status === 'active');
+    if (active.length === 0) {
+        container.innerHTML = '<p class="empty-state">No active assignments. Use Assign Practice to add one.</p>';
+        return;
+    }
+    let html = '';
+    for (const a of active) {
+        const info = categories[a.audio_file] || {};
+        const raga = (info.raga && info.raga !== 'Unknown') ? info.raga : 'Uncategorized';
+        const friendly = typeof friendlyName === 'function' ? friendlyName(a.audio_file) : a.audio_file;
+        const to = a.assigned_to || [];
+        const assignLabel = (to.length === 1 && to[0] === 'All') || to.length >= (studentNames || []).length ? 'All' : to.length + ' students';
+        html += '<div class="assignment-list-row" data-id="' + esc(a.id) + '">';
+        html += '<div class="assignment-list-info">';
+        html += '<span class="assignment-list-raga">' + esc(raga) + '</span>';
+        html += '<span class="assignment-list-meta">' + esc(friendly) + (a.due_date ? ' · Due ' + esc(a.due_date) : '') + '</span>';
+        if (a.notes) html += '<span class="assignment-list-notes">' + esc(a.notes) + '</span>';
+        html += '<span class="assignment-list-to">Assigned to: ' + esc(assignLabel) + '</span>';
+        html += '</div>';
+        html += '<div class="assignment-list-actions">';
+        html += '<button type="button" class="btn-link" onclick="editAssignment(\'' + esc(a.id) + '\')">Edit</button>';
+        html += '<button type="button" class="btn-link danger" onclick="removeAssignment(\'' + esc(a.id) + '\')">Remove</button>';
+        html += '</div></div>';
+    }
+    container.innerHTML = html;
+}
+
+function editAssignment(id) {
+    fetch('/api/assignments').then(r => r.json()).then(assignments => {
+        const assignment = (assignments || []).find(a => a.id === id);
+        if (assignment) {
+            closeModal('assignments-list-modal');
+            openAssignModal(assignment);
+        }
+    }).catch(() => {});
+}
+
+async function removeAssignment(id) {
+    if (!confirm('Remove this assignment? Students will no longer see it.')) return;
+    try {
+        const resp = await fetch('/api/assignments/remove', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({ id: id })
+        });
+        const result = await resp.json();
+        if (result.ok) {
+            showToast('Assignment removed', false, false);
+            await refreshAssignmentsListModal();
+            updateTeacherAssignmentCount();
+        } else {
+            showToast(result.error || 'Error removing assignment', true, false);
+        }
+    } catch (e) {
+        showToast('Error removing assignment', true, false);
     }
 }
 

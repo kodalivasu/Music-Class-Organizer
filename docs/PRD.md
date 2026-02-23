@@ -198,6 +198,12 @@ This app turns chaos into organization — making it easy to find any recording,
 - "What should I practice before the next class?"
 - "Which paltaas help with Yaman?"
 
+### 4.8.1 Assignment management (Phase 2 — Done)
+
+**What it does:** Teacher can see all active practice assignments, edit them (recording, students, notes, due date), or remove them (soft-delete; students no longer see them). Teacher and students use the same list (GET /api/assignments); students filter by assigned_to. Create/update/remove are teacher-only (403 for non-teachers). The "Assign Practice" recording dropdown is sorted by most recent first (date from filename).
+
+**Implementation:** POST /api/assignments/update (id + optional fields), POST /api/assignments/remove (id, sets status=removed). Teacher dashboard: "View & edit assignments" opens a modal listing active assignments with Edit/Remove; Edit reuses the Assign Practice modal with pre-filled form.
+
 ### 4.9 Class & Practice Tracking (Phase 4 — Planned)
 
 **What it does:** Calendar, attendance, fees, practice streaks.

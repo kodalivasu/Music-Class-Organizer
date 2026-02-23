@@ -66,3 +66,4 @@ An app to organize my kids' music class by extracting and structuring data from 
 - [x] Logout; role-based UI (Switch for teacher only, Class contacts tab)
 - [x] In-app recording feature for Teacher
 - [x] Add AI-powered queries about the music (explain raga, find famous recordings)
+- [x] Teacher can view all assigned practices and edit/remove them; teacher and students see the same list; assign-practice recording dropdown sorted newest first

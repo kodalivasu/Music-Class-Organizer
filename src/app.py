@@ -512,7 +512,7 @@ def build_teacher_dashboard(categories, events, people, audio_files, teacher_id=
                 <span class="dot">&middot;</span>
                 <span>{len(ragas)} ragas</span>
                 <span class="dot">&middot;</span>
-                <span>{active_assignments} assigned</span>
+                <span id="teacher-active-assignments-count">{active_assignments} assigned</span>
             </div>
             <div class="action-buttons">
                 <button class="action-btn primary" onclick="openRecorder()">
@@ -526,6 +526,10 @@ def build_teacher_dashboard(categories, events, people, audio_files, teacher_id=
                 <button class="action-btn" onclick="openAssignModal()">
                     <svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 3h-4.18C14.4 1.84 13.3 1 12 1c-1.3 0-2.4.84-2.82 2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 0c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zm2 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>
                     Assign Practice
+                </button>
+                <button class="action-btn" onclick="openAssignmentsListModal()">
+                    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 13h2v-2H3v2zm0 4h2v-2H3v2zm0-8h2V7H3v2zm4 4h14v-2H7v2zm0 4h14v-2H7v2zM7 7v2h14V7H7z"/></svg>
+                    View &amp; edit assignments
                 </button>
             </div>
         </div>
@@ -921,6 +925,19 @@ def build_page(teacher_id=None, role=None, student_id=None, parent_id=None):
                 <textarea id="assign-notes" class="modal-input modal-textarea" placeholder="Practice instructions..."></textarea>
             </div>
             <button class="save-btn" onclick="saveAssignment()">Assign Practice</button>
+        </div>
+    </div>
+</div>
+
+<!-- Assigned practices list (teacher) -->
+<div id="assignments-list-modal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>Assigned practices</h3>
+            <button class="modal-close" onclick="closeModal('assignments-list-modal')">&times;</button>
+        </div>
+        <div class="modal-body">
+            <div id="assignments-list"><p class="empty-state">Loading...</p></div>
         </div>
     </div>
 </div>
@@ -1619,6 +1636,9 @@ class AppHandler(SimpleHTTPRequestHandler):
             session = self.require_session(api=True)
             if session is None:
                 return
+            if session.get("role") != "teacher":
+                self._send_json({"ok": False, "error": "Forbidden"}, 403)
+                return
             teacher_id = session["teacher_id"]
             assignments = tenant_data.load_assignments(teacher_id)
             audio_file = data.get("audio_file")
@@ -1640,6 +1660,50 @@ class AppHandler(SimpleHTTPRequestHandler):
             assignments.append(assignment)
             tenant_data.save_assignments(teacher_id, assignments)
             self._send_json({"ok": True, "id": assignment["id"]})
+
+        elif parsed.path == "/api/assignments/update":
+            session = self.require_session(api=True)
+            if session is None:
+                return
+            if session.get("role") != "teacher":
+                self._send_json({"ok": False, "error": "Forbidden"}, 403)
+                return
+            teacher_id = session["teacher_id"]
+            assignments = tenant_data.load_assignments(teacher_id)
+            aid = data.get("id")
+            if not aid:
+                self._send_json({"ok": False, "error": "Missing id"}, 400)
+                return
+            found = next((a for a in assignments if a.get("id") == aid), None)
+            if not found:
+                self._send_json({"ok": False, "error": "Assignment not found"}, 404)
+                return
+            for key in ("audio_file", "assigned_to", "notes", "due_date", "status"):
+                if key in data:
+                    found[key] = data[key] if key != "assigned_to" else (data[key] if isinstance(data[key], list) else [])
+            tenant_data.save_assignments(teacher_id, assignments)
+            self._send_json({"ok": True})
+
+        elif parsed.path == "/api/assignments/remove":
+            session = self.require_session(api=True)
+            if session is None:
+                return
+            if session.get("role") != "teacher":
+                self._send_json({"ok": False, "error": "Forbidden"}, 403)
+                return
+            teacher_id = session["teacher_id"]
+            assignments = tenant_data.load_assignments(teacher_id)
+            aid = data.get("id")
+            if not aid:
+                self._send_json({"ok": False, "error": "Missing id"}, 400)
+                return
+            found = next((a for a in assignments if a.get("id") == aid), None)
+            if not found:
+                self._send_json({"ok": False, "error": "Assignment not found"}, 404)
+                return
+            found["status"] = "removed"
+            tenant_data.save_assignments(teacher_id, assignments)
+            self._send_json({"ok": True})
 
         # --- Events ---
         elif parsed.path == "/api/events/create":

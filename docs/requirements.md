@@ -112,6 +112,8 @@ Teacher, parents, and students in the music class community.
 - [ ] Practice reminders ("You haven't practiced the bandish in 5 days")
 - [ ] Progress tracking by raga/composition
 - [x] Practice assignment creation (teacher assigns recordings to students)
+- [x] Teacher can see all assigned practices and edit or remove them (same list as students see)
+- [x] Assign-practice recording dropdown sorted by most recent first
 
 ---
 
@@ -280,6 +282,8 @@ A key feature to replace WhatsApp audio messages.
 - [x] **In-app recording for teacher** (MediaRecorder API, record + name + save)
 - [x] Attendance tracking with student checklist and date selection
 - [x] Practice assignment creation (select recording + students + due date)
+- [x] Teacher can view all assigned practices and edit or remove them; teacher and students see the same list
+- [x] Assign-practice recording dropdown shows newest recordings first
 - [x] Event scheduling (name, date, time, location, description)
 - [x] Photo/media upload from teacher dashboard
 - [x] Student practice dashboard:

@@ -1754,7 +1754,7 @@ class AppHandler(SimpleHTTPRequestHandler):
             existing_dates = [e["date"] for e in log[student] if isinstance(e, dict)]
             if date_str not in existing_dates:
                 log[student].append({"date": date_str, "duration": duration, "items": items})
-                log[student].sort()
+                log[student].sort(key=lambda e: e.get("date", ""))
             tenant_data.save_practice_log(teacher_id, log)
             self._send_json({"ok": True, "student": student, "date": date_str, "total_days": len(log[student])})
 
